@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Buzz It</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">PassKey</string>
+    <string name="login_btn">Lets GO</string>
+    <string name="signup_btn">Signup</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="not_verified">Not Verified</string>
+    <string name="verified">VERIFIED 🆗</string>
+    <string name="logged_in_as">You are logged in as:</string>
+    <string name="checking_you">Checking you</string>
+    <string name="in_waitlist">You\'re in waitlist</string>
+    <string name="ctitle">Buzz In</string>
+    <string name="cq">0</string>
+    <string name="user_space">---</string>
+    <string name="exit_arrow">logout</string>
+    <string name="A">A</string>
+    <string name="B">B</string>
+    <string name="C">C</string>
+    <string name="D">D</string>
+    <string name="thankyou">Thank You 🔥</string>
+    <string name="successfully_completed">Buzzer Quiz has been \n successfully completed 👍🏼</string>
+</resources>
