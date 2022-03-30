@@ -11,6 +11,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.getField
 import com.google.firebase.ktx.Firebase
@@ -48,21 +49,6 @@ class BuzzActivity : AppCompatActivity() {
 
         val dp_cudoc = cp_users.document(luser)
 
-        fun getCq() {
-            dp_ques.get()
-                .addOnSuccessListener { ds_ques ->
-                    cq = ds_ques.getLong("cq")?.toInt() ?: 0
-//                    Toast.makeText(this, "$cq", Toast.LENGTH_SHORT).show()
-                }
-        }
-
-        fun getCa() {
-            dp_ans.get()
-                .addOnSuccessListener { ds_ans ->
-                    ca = ds_ans.getLong("ca")?.toInt() ?: 0
-//                    Toast.makeText(this, "$ca", Toast.LENGTH_SHORT).show()
-                }
-        }
 
         fun getSolv() {
             dp_solv.get()
@@ -71,30 +57,36 @@ class BuzzActivity : AppCompatActivity() {
                 }
         }
 
-        fun putUa() {
-            val udat = hashMapOf(
-                "1" to hashMapOf(
-                    "chosen" to "A",
-                    "time" to "23:33:11"
-                )
-            )
-            dp_cudoc.set(udat)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("pkp09", "DocumentSnapshot added with ID: ")
-                }
-                .addOnFailureListener { e ->
-                    Log.w("qkq09", "Error adding document field", e)
-                }
-        }
-
-        fun isCorrect(): Int {
-            if (chosen==solv){
-                Toast.makeText(this,"You are correct cq${cq} ca${ca} sl${solv} ch${chosen}",Toast.LENGTH_SHORT).show()
+        fun isCorrect(): Boolean {
+            if(ca==0 && chosen==solv){
+                Toast.makeText(this,"α",Toast.LENGTH_SHORT).show()
+                return true
+            }
+            else if (chosen==solv){
+                Toast.makeText(this,"β",Toast.LENGTH_SHORT).show()
+                return true
+//                Toast.makeText(this,"You are correct cq${cq} ca${ca} sl${solv} ch${chosen}",Toast.LENGTH_SHORT).show()
             }
             else{
-                Toast.makeText(this,"Not correct cq${cq} ca${ca} sl${solv} ch${chosen}",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,"γ",Toast.LENGTH_SHORT).show()
+                return false
             }
-            return 0;
+        }
+
+        fun putUa() {
+            val createdAt = FieldValue.serverTimestamp()
+            val udat = hashMapOf(
+                    "chosen" to chosen,
+                    "time" to createdAt
+            )
+            if(ca==0 && isCorrect()){
+                var winner = hashMapOf(
+                    "$cq" to luser
+                )
+                dp_qwin.update("$cq",luser)
+                dp_ans.update("ca",ca+1)
+            }
+            dp_cudoc.update("$cq",udat)
         }
 
         fun disableAllButtons() {
@@ -115,43 +107,34 @@ class BuzzActivity : AppCompatActivity() {
                 disableAllButtons()
                 btA.setBackgroundColor(Color.RED)
                 isCorrect()
+                putUa()
             }
             btB.setOnClickListener {
                 chosen = "B"
                 disableAllButtons()
                 btB.setBackgroundColor(Color.RED)
                 isCorrect()
+                putUa()
             }
             btC.setOnClickListener {
                 chosen = "C"
                 disableAllButtons()
                 btC.setBackgroundColor(Color.RED)
                 isCorrect()
+                putUa()
             }
             btD.setOnClickListener {
                 chosen = "D"
                 disableAllButtons()
                 btD.setBackgroundColor(Color.RED)
                 isCorrect()
+                putUa()
             }
         }
 
 //        tvTitle.setOnClickListener{
 //            oneTimeOption()
 //        }
-
-
-        fun qwin() {
-            db.collection("qdata")
-                .document("ans")
-                .get()
-                .addOnSuccessListener { ans ->
-                    if ((ans.get("ca")) == 0.toLong() || (ans.get("ca")) == null) {
-//                        Toast.makeText(this, "${ans.get("ca")}", Toast.LENGTH_SHORT).show()
-                        db.collection("qdata")
-                    }
-                }
-        }
 
 
         // listener for current question number
@@ -165,9 +148,7 @@ class BuzzActivity : AppCompatActivity() {
                 getSolv()
                 cq = snapshot.getLong("cq")?.toInt() ?: 0
                 tvCq.text = "$cq"
-                if(cq==200){
-                    startActivity(Intent(this,VerifyActivity::class.java))
-                }
+                if(cq==200) startActivity(Intent(this,ThanksActivity::class.java))
             }
             else {
                 Toast.makeText(this,"Something went wrong",Toast.LENGTH_SHORT).show()
@@ -186,6 +167,8 @@ class BuzzActivity : AppCompatActivity() {
                 Toast.makeText(this,"Something went wrong",Toast.LENGTH_SHORT).show()
             }
         }
+
+
 
 //        // listening for correct answers posted
 //        dp_solv.addSnapshotListener { snapshot, e ->

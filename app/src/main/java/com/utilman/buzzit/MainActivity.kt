@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         if (user!=null) {
             finishAffinity();
-//            startActivity(Intent(this,VerifyActivity::class.java))
+            startActivity(Intent(this,VerifyActivity::class.java))
         }
 
         signUpBtn.setOnClickListener {
